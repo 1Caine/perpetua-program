@@ -1,0 +1,22 @@
+[toolchain]
+package_manager = "npm"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+perpetua = "PerpX2pWbVffrbJfb4zbDtGkJeWGyucH2HVPkvdpDit"
+
+[programs.devnet]
+perpetua = "PerpfW46kjYYhYcPzNxnyuTrsWBSNXax953aPrd3FCo"
+
+[programs.mainnet]
+perpetua = "PerpX2pWbVffrbJfb4zbDtGkJeWGyucH2HVPkvdpDit"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "npx tsx --test tests/*.test.ts"

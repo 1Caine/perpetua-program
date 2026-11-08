@@ -1,0 +1,68 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  SOLANA_VERSION: "4.2.2"
+
+jobs:
+  verifiable-build:
+    name: Verifiable build (solana-verify)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: false
+      - name: Install solana-verify
+        run: cargo install solana-verify --locked
+      - name: Build in the pinned Docker image
+        run: solana-verify build --library-name perpetua
+      - name: Executable hash
+        id: hash
+        run: |
+          HASH=$(solana-verify get-executable-hash target/deploy/perpetua.so)
+          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+          echo "$HASH  perpetua.so" > executable-hash.txt
+          echo "### perpetua.so executable hash" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "$HASH" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "perpetua.so executable hash: $HASH"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: perpetua-verifiable-build
+          path: |
+            target/deploy/perpetua.so
+            executable-hash.txt
+
+  tests:
+    name: Tests (LiteSVM, mainnet-fork rehearsal, fuzz smoke)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v${SOLANA_VERSION}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+      - name: Build
+        run: cargo build-sbf --manifest-path programs/perpetua/Cargo.toml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Tests
+        run: npm test
+      - name: Fuzz smoke run
+        run: FUZZ_SEED=${{ github.run_number }} FUZZ_START=1 FUZZ_SEQ=100 FUZZ_SUBST=10 npm run fuzz
