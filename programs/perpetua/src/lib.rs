@@ -23,7 +23,7 @@ solana_security_txt::security_txt! {
     contacts: "email:support@perpetuaprotocol.xyz,link:https://perpetuaprotocol.xyz/security",
     policy: "https://perpetuaprotocol.xyz/.well-known/security.txt",
     preferred_languages: "en",
-    source_code: "https://github.com/1Caine/perpetua",
+    source_code: "https://github.com/perpetuaxyz/perpetua-program",
     auditors: "None yet. See https://perpetuaprotocol.xyz/security for the current audit status."
 }
 

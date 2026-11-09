@@ -11,7 +11,7 @@ export type Perpetua = {
     "version": "0.1.0",
     "spec": "0.1.0",
     "description": "Perpetua: non-custodial onchain inheritance on Solana",
-    "repository": "https://github.com/1Caine/perpetua"
+    "repository": "https://github.com/perpetuaxyz/perpetua-program"
   },
   "instructions": [
     {

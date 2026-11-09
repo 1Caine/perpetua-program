@@ -46,7 +46,7 @@ solana-verify get-program-hash -u mainnet PerpX2pWbVffrbJfb4zbDtGkJeWGyucH2HVPkv
 solana-verify verify-from-repo -u mainnet \
   --program-id PerpX2pWbVffrbJfb4zbDtGkJeWGyucH2HVPkvdpDit \
   --library-name perpetua \
-  https://github.com/1Caine/perpetua-program
+  https://github.com/perpetuaxyz/perpetua-program
 ```
 
 The two hashes match when the onchain program was built from this source. The `verify` workflow publishes the hash of every build on `main` in its run summary.
